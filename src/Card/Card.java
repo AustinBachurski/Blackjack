@@ -1,17 +1,19 @@
 package Card;
 
 public class Card {
-    CardFace face;    // ╭, ╮, ╰, ╯
-    CardSuite suite;  // ♣, ♠, ♦, ♥
+    CardFace _face;    // ╭, ╮, ╰, ╯
+    CardSuite _suite;  // ♣, ♠, ♦, ♥
+
+    Card(CardFace face, CardSuite suite) {
+        _face = face;
+        _suite = suite;
+    }
     String[][] representation = new String[][]{
             { "╭-------╮" },
-            { "| ♣     |" },
-            { "|   K   |" },
-            { "|     ♣ |" },
+            { "| " + _suite.str() + "     |" },
+            { "|   " + _face.str() + "   |" },
+            { "|     " + _suite.str() + "|" },
             { "╰-------╯" },
     };
-
-
-
 
 }

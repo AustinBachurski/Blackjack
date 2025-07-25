@@ -13,33 +13,39 @@ public enum CardFace {
     TEN,
     JACK,
     QUEEN,
-    KING,
+    KING;
 
-    String value() {
-        switch (this) {
-            case ACE:
-                return 1;
-            case TWO:
-                return 2;
-            case THREE:
-                return 3;
-            case FOUR:
-                return 4;
-            case FIVE:
-                return 5;
-            case SIX:
-                return 6;
-            case SEVEN:
-                return 7;
-            case EIGHT:
-                return 8;
-            case NINE:
-                return 9;
-            case TEN:
-            case JACK:
-            case QUEEN:
-            case KING:
-                return 10;
-        }
+    public String str() {
+        return switch (this) {
+            case ACE   -> "1";
+            case TWO   -> "2";
+            case THREE -> "3";
+            case FOUR  -> "4";
+            case FIVE  -> "5";
+            case SIX   -> "6";
+            case SEVEN -> "7";
+            case EIGHT -> "8";
+            case NINE  -> "9";
+            case TEN   -> "10";
+            case JACK  -> "J";
+            case QUEEN -> "Q";
+            case KING  -> "K";
+        };
     }
+
+    public int value() {
+        return switch (this) {
+            case ACE   -> 1;
+            case TWO   -> 2;
+            case THREE -> 3;
+            case FOUR  -> 4;
+            case FIVE  -> 5;
+            case SIX   -> 6;
+            case SEVEN -> 7;
+            case EIGHT -> 8;
+            case NINE  -> 9;
+            case TEN, JACK, QUEEN, KING -> 10;
+        };
+    }
+
 }
