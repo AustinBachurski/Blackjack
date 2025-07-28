@@ -1,4 +1,4 @@
-package Card;
+package Cards;
 
 public enum CardFace {
     ACE,
@@ -17,19 +17,19 @@ public enum CardFace {
 
     public String str() {
         return switch (this) {
-            case ACE   -> "1";
-            case TWO   -> "2";
-            case THREE -> "3";
-            case FOUR  -> "4";
-            case FIVE  -> "5";
-            case SIX   -> "6";
-            case SEVEN -> "7";
-            case EIGHT -> "8";
-            case NINE  -> "9";
+            case ACE   -> "1 ";
+            case TWO   -> "2 ";
+            case THREE -> "3 ";
+            case FOUR  -> "4 ";
+            case FIVE  -> "5 ";
+            case SIX   -> "6 ";
+            case SEVEN -> "7 ";
+            case EIGHT -> "8 ";
+            case NINE  -> "9 ";
             case TEN   -> "10";
-            case JACK  -> "J";
-            case QUEEN -> "Q";
-            case KING  -> "K";
+            case JACK  -> "J ";
+            case QUEEN -> "Q ";
+            case KING  -> "K ";
         };
     }
 
