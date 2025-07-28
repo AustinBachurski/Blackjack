@@ -1,6 +1,4 @@
-package Cards;
-
-public enum CardSuite {
+public enum CardSuit {
     CLUBS,
     SPADES,
     DIAMONDS,
