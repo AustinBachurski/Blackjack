@@ -18,8 +18,14 @@ public final class ConsoleIO {
         System.out.println("( ━☞´◔‿ゝ◔`)━☞ GG");
     }
 
+    public static void displayRoundScore(int playerHandValue, int dealerHandValue) {
+        System.out.println("Dealer Hand was worth: " + dealerHandValue);
+        System.out.println("Your Hand was worth: " + playerHandValue);
+    }
+
     public static void drawCardTable(Game game) {
         clearScreen();
+        System.out.println();
         System.out.println(game.getDealerFace());
         System.out.println(game.getDealerHand().tableCards(game.cardsToShow()));
         System.out.println(game.getPlayerHand().allCardsFaceUp());

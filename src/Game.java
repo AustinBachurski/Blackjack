@@ -133,10 +133,16 @@ public class Game {
     }
 
     public void play() {
-        do {
+        while (true) {
             gameLoop();
-            dealNewGame();
-        } while(ConsoleIO.playAgain());
+            ConsoleIO.displayRoundScore(playerHand.calculateValue(), dealerHand.calculateValue());
+
+            if (ConsoleIO.playAgain()) {
+                dealNewGame();
+            } else {
+                break;
+            }
+        }
 
         ConsoleIO.displayEndOfGameStats(stats);
     }
