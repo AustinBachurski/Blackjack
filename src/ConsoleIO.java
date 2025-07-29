@@ -39,10 +39,10 @@ public final class ConsoleIO {
             String input = stdin.nextLine();
 
             if (input.length() == 1) {
-                if (input.equals("y")) {
+                if (Character.toLowerCase(input.charAt(0)) == 'y') {
                     return true;
                 }
-                if (input.equals("n")) {
+                if (Character.toLowerCase(input.charAt(0)) == 'n') {
                     return false;
                 }
             }
@@ -59,10 +59,10 @@ public final class ConsoleIO {
             String input = stdin.nextLine();
 
             if (input.length() == 1) {
-                if (input.charAt(0) == 'h') {
+                if (Character.toLowerCase(input.charAt(0)) == 'h') {
                     return true;
                 }
-                else if (input.charAt(0) == 's') {
+                else if (Character.toLowerCase(input.charAt(0)) == 's') {
                     return false;
                 }
             }
