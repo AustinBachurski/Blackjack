@@ -1,3 +1,4 @@
+// This enum is used to identify the face of a card.
 public enum CardFace {
     ACE,
     TWO,
@@ -13,6 +14,7 @@ public enum CardFace {
     QUEEN,
     KING;
 
+    // This method returns the string representation of the face.
     public String str() {
         return switch (this) {
             case ACE   -> "A ";
@@ -31,6 +33,8 @@ public enum CardFace {
         };
     }
 
+    // This method returns the numeric value of a card.
+    // Aces are started at 1 initially and updated to 11 later if needed.
     public int value() {
         return switch (this) {
             case ACE   -> 1;
