@@ -1,0 +1,329 @@
+MAIN PROGRAM
+    DECLARE game AS NEW Blackjack
+    CALL game.play
+END PROGRAM
+
+
+CLASS Card
+    DECLARE artFaceDown AS STRING ARRAY
+    DECLARE artFaceUp AS STRING ARRAY
+    DECLARE face AS ENUM CardFace
+
+    CONSTRUCTOR FOR Card PARAMETERS(ENUM CardFace face, ENUM CardSuit suit)
+        SET artFaceDown TO [
+            "╭-------╮",
+            "| \\ | / |",
+            "|  \\|/  |",
+            "|---X---|",
+            "|  /|\\  |",
+            "| / | \\ |",
+            "╰-------╯",
+        ]
+        SET artFaceUp TO [
+            "╭-------╮",
+            CONCATENATE("| ", CALL suit.str, "     |"),
+            "|       |",
+            CONCATENATE("|   ", CALL face.str, "  |"),
+            "|       |",
+            CONCATENATE("|     ", CALL suit.str, " |"),
+            "╰-------╯",
+        ]
+        SET this.face TO face
+    END CONSTRUCTOR
+
+    FUNCTION getArtFaceDown
+        RETURN artFaceDown
+    END FUNCTION
+
+    FUNCTION getArtFaceUp
+        RETURN artFaceUp
+    END FUNCTION
+
+    FUNCTION getArtIndices
+        RETURN LENGTH artFaceUp
+    END FUNCTION
+
+    FUNCTION getFace
+        RETURN face
+    END FUNCTION
+END CLASS
+
+ENUM CardFace
+    DECLARE ACE
+    DECLARE TWO
+    DECLARE THREE
+    DECLARE FOUR
+    DECLARE FIVE
+    DECLARE SIX
+    DECLARE SEVEN
+    DECLARE EIGHT
+    DECLARE NINE
+    DECLARE TEN
+    DECLARE JACK
+    DECLARE QUEEN
+    DECLARE KING
+
+    FUNCTION str
+        SWITCH PARAMETER(this)
+            CASE ACE   RETURN "A "
+            CASE TWO   RETURN "2 "
+            CASE THREE RETURN "3 "
+            CASE FOUR  RETURN "4 "
+            CASE FIVE  RETURN "5 "
+            CASE SIX   RETURN "6 "
+            CASE SEVEN RETURN "7 "
+            CASE EIGHT RETURN "8 "
+            CASE NINE  RETURN "9 "
+            CASE TEN   RETURN "10"
+            CASE JACK  RETURN "J "
+            CASE QUEEN RETURN "Q "
+            CASE KING  RETURN "K "
+    END FUNCTION
+
+    FUNCTION value
+        SWITCH PARAMETER(this)
+            CASE ACE   RETURN 1
+            CASE TWO   RETURN 2
+            CASE THREE RETURN 3
+            CASE FOUR  RETURN 4
+            CASE FIVE  RETURN 5
+            CASE SIX   RETURN 6
+            CASE SEVEN RETURN 7
+            CASE EIGHT RETURN 8
+            CASE NINE  RETURN 9
+            CASE TEN   FALLTHROUGH
+            CASE JACK  FALLTHROUGH
+            CASE QUEEN FALLTHROUGH
+            CASE KING  RETURN 10
+    END FUNCTION
+
+END ENUM
+
+ENUM CardSuit
+    DECLARE CLUBS
+    DECLARE SPADES
+    DECLARE DIAMONDS
+    DECLARE HEARTS
+
+    FUNCTION str
+        SWITCH PARAMETER(this)
+            CASE CLUBS    RETURN "♣"
+            CASE SPADES   RETURN "♠"
+            CASE DIAMONDS RETURN "♦"
+            CASE HEARTS   RETURN "♥"
+    END FUNCTION
+
+END ENUM
+
+STATIC CLASS ConsoleIO
+    DISABLE CONSTRUCTOR FOR ConsoleIO
+
+    FUNCTION clearScreen
+        CLEAR SCREEN
+    END FUNCTION
+
+    FUNCTION displayEndOfGameStats PARAMETERS(STRUCT GameStats stats)
+        CALL clearScreen
+        DISPLAY CONCATENATE("You played ", stats.gamesPlayed, TERNARY(IF stats.gamesPlayed IS 1 THEN RETURN " game." ELSE RETURN " games."))
+        DISPLAY CONCATENATE("You won ", stats.playerWins, TERNARY(IF stats.playerWins IS 1 THEN RETURN " time." ELSE RETURN " times."))
+        DISPLAY CONCATENATE("You lost ", stats.dealerWins, TERNARY(IF stats.dealerWins IS 1 THEN RETURN " time." ELSE RETURN " times."))
+        DISPLAY CONCATENATE("There ", TERNARY(IF stats.draws IS 1 THEN RETURN "was " ELSE RETURN "were "), stats.draws, TERNARY(IF stats.draws IS 1 THEN RETURN " draw." ELSE RETURN " draws."))
+        DISPLAY CONCATENATE("( ━☞´◔‿ゝ◔`)━☞ GG")
+    END FUNCTION
+
+    FUNCTION displayRoundScore PARAMETERS(INTEGER playerHandValue, INTEGER dealerHandValue)
+        DISPLAY CONCATENATE("Dealer Hand was worth: ", dealerHandValue)
+        DISPLAY CONCATENATE("Your Hand was worth: ", playerHandValue)
+    END FUNCTION
+
+    FUNCTION drawCardTAble PARAMETERS(CLASS Blackjack game)
+        CALL clearScreen
+        DISPLAY
+        DISPLAY CALL game.getDealerFace
+        DISPLAY CALL game.getDealerHand.tableCards ARGUMENTS(CALL game.cardsToShow)
+        DISPLAY CALL game.getPlayerHand.allCardsFaceUp
+    END FUNCTION
+
+    FUNCTION playAgain
+        DECLARE stdin AS NEW Scanner ARGUMENTS(System.in)
+
+        WHILE TRUE DO
+            DISPLAY "Play again (y/n)? "
+            DECLARE input AS STRING
+            READ FROM stdin INTO input
+
+            IF LENGTH input IS 1 THEN
+                IF LOWERCASE(input)[0] IS 'y' THEN
+                    RETURN TRUE
+                END IF
+                IF LOWERCASE(input)[0] IS 'n' THEN
+                    RETURN FALSE
+                END IF
+            END IF
+            
+            DISPLAY "Just tell me, y or n... "
+        END WHILE
+    END FUNCTION
+
+    FUNCTION playerHits
+        DECLARE stdin AS NEW Scanner ARGUMENTS(System.in)
+        DISPLAY "Would you like to hit(h), or stay(s)? "
+
+        WHILE TRUE DO
+            DECLARE input AS STRING
+            READ FROM stdin INTO input
+
+            IF LENGTH input IS 1 THEN
+                IF LOWERCASE(input)[0] IS 'h' THEN
+                    RETURN TRUE
+                END IF
+                IF LOWERCASE(input)[0] IS 's' THEN
+                    RETURN FALSE
+                END IF
+            END IF
+            
+            DISPLAY "No complaining, hit(h) or stay(s)? "
+        END WHILE
+    END FUNCTION
+
+    FUNCTION pressEnter
+        DISPLAY "Press enter to continue..."
+        DECLARE stdin AS NEW Scanner ARGUMENTS(System.in)
+        READ FROM stdin
+    END FUNCTION
+END CLASS
+
+STRUCT GameStats
+    DECLARE gamesPlayed AS INTEGER <- 0
+    DECLARE playerWins AS INTEGER <- 0
+    DECLARE dealerWins AS INTEGER <- 0
+    DECLARE draws AS INTEGER <- 0
+END STRUCT
+
+CLASS Hand
+    DECLARE CONSTANT ACE_HIGH_VALUE AS INTEGER <- 10
+    DECLARE CONSTANT TWENTY_ONE AS INTEGER <- 21
+    DECLARE CONSTANT TABLE_WIDTH AS INTEGER <- 60
+    DECLARE CONSTANT OTHER_SIDE AS INTEGER <- 7
+    DECLARE CONSTANT TABLE_SIDES AS STRING ARRAY <- [
+            "      / ",
+            "     /  ",
+            "    /   ",
+            "   /    ",
+            "  /     ",
+            " /      ",
+            "/       ",
+            "\\",
+            " \\",
+            "  \\",
+            "   \\",
+            "    \\",
+            "     \\",
+            "      \\",
+    ]
+    DECLARE cards AS ARRAYLIST
+    DECLARE cardArtIndices AS INTEGER
+
+    CONSTRUCTOR FOR Hand PARAMETERS(CLASS Card firstCard, CLASS Card secondCard)
+        ADD firstCard TO cards
+        ADD secondCard TO cards
+        SET cardArtIndices TO CALL firstCard.getArtIndices
+    END FUNCTION
+
+    FUNCTION addCard PARAMETERS(CLASS card)
+        ADD card TO cards
+    END FUNCTION
+
+    FUNCTION allCardsFaceUp
+        DECLARE sb AS NEW StringBuilder
+
+        FOR INTEGER i = 0 IF i LESS THAN cardArtIndices THEN INCREMENT i DO
+            FOR EACH CLASS card IN cards DO
+                APPEND TO sb CALL card.getArtFaceUp AT INDEX i
+                APPEND TO sb ' '
+            END FOR
+
+            APPEND TO sb '\n'
+        END FOR
+
+        POP FROM sb
+        RETURN sb AS STRING
+    END FUNCTION
+
+    FUNCTION busted
+        RETURN CALL calculateValue GREATER THAN CONSTANT TWENTY_ONE
+    END FUNCTION
+
+    FUNCTION calculateValue
+        DECLARE total AS INTEGER <- 0
+        DECLARE aces AS INTEGER <- 0
+
+        FOR EACH CLASS Card card in cards DO
+            ADD TO total CALL card.getFace.value
+
+            IF CALL card.getFace IS CardFace.ACE THEN
+                INCREMENT aces
+            END IF
+        END FOR
+
+        IF aces IS 0 THEN
+            RETURN total
+        END IF
+
+        DECLARE runningTotal AS INTEGER <- total
+
+        FOR INTEGER i = 0 IF i LESS THAN aces THEN INCREMENT i DO
+            IF runningTotal IS CONSTANT TWENTY_ONE THEN
+                RETURN runningTotal
+            END IF
+
+            IF runningTotal LESS THAN CONSTANT TWENTY_ONE LOGICAL AND SUM(runningTotal, CONSTANT ACE_HIGH_VALUE) LESS THAN OR GREATER THAN CONSTANT TWENTY_ONE THEN
+                SET runningTotal TO SUM(runningTotal, CONSTANT ACE_HIGH_VALUE)
+            END IF
+        END FOR
+
+        RETURN runningTotal
+    END FUNCTION
+
+    FUNCTION tableCards PARAMETERS(ENUM Blackjack.FaceUpOption option)
+        DECLARE sb AS NEW StringBuilder
+        DECLARE rowStart AS INTEGER <- 0
+
+        FOR INTEGER i = 0 IF i LESS THAN cardArtIndices THEN INCREMENT i DO
+            APPEND TO sb CONSTANT TABLE_SIDES AT INDEX i
+            SET rowStart TO LENGTH sb
+
+            DECLARE firstCard AS BOOLEAN <- TRUE
+
+            FOR EACH CLASS Card card in cards DO
+                IF firstCard THEN
+                    APPEND TO sb CALL card.getArtFaceUp AT INDEX i
+                    APPEND TO sb ' '
+
+                    IF option IS ENUM Blackjack.FaceUpOption.ONE THEN
+                        SET firstCard TO FALSE
+                    ELSE
+                        APPEND TO sb CALL card.getArtFaceDown AT INDEX i
+                        APPEND TO sb ' '
+                    END IF
+                    
+                END IF
+            END FOR
+
+            REPEAT FOR SUBTRACT(CONSTANT TABLE_WIDTH, SUBTRACT(LENGTH sb, rowstart)) DO
+                APPEND TO sb ' '
+            END REPEAT
+
+            APPEND TO sb CONSTANT TABLE_SIDES AT INDEX SUM(i, CONSTANT OTHER_SIDE)
+            APPEND TO sb '\n'
+        END FOR
+
+        APPEND TO sb "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+        APPEND TO sb "||     ||                                                         ||     ||\n"
+        APPEND TO sb "||                                                                       ||\n"
+        APPEND TO sb "||                                                                       ||\n"
+
+        RETURN sb AS STRING
+    END FUNCTION
+
+END CLASS
